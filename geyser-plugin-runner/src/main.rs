@@ -258,7 +258,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                         println!("___ Epoch: {:?}", epoch);
                     }
                     node::Node::Rewards(rewards) => {
-                        println!("___ Rewards: {:?}", node_with_cid.get_cid());
+                        // println!("___ Rewards: {:?}", node_with_cid.get_cid());
                         // println!("___ Next items: {:?}", rewards.data.next);
 
                         #[allow(clippy::overly_complex_bool_expr)]
