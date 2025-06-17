@@ -239,7 +239,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                         }
                     }
                     node::Node::DataFrame(_) => {
-                        println!("___ DataFrame: {:?}", node_with_cid.get_cid());
+                        // println!("___ DataFrame: {:?}", node_with_cid.get_cid());
                     }
                 }
                 Ok(())
