@@ -66,6 +66,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             let mut this_block_entry_count: u64 = 0;
             let mut this_block_rewards: solana_storage_proto::convert::generated::Rewards =
                 solana_storage_proto::convert::generated::Rewards::default();
+
+            if block.slot % 1000 == 0 {
+                println!("___ Processing Block: {:?}", block.slot);
+            }
+
             nodes.each(|node_with_cid| -> Result<(), Box<dyn Error>> {
                 item_index += 1;
                 let node = node_with_cid.get_node();
