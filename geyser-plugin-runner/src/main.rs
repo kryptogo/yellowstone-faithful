@@ -24,7 +24,12 @@ fn main() -> Result<(), Box<dyn Error>> {
     let file = open_reader(&file_path)?;
     let reader = BufReader::with_capacity(8 * 1024 * 1024, file);
     let mut item_index = 0;
-    {
+
+    // Track the latest processed block number
+    let mut latest_processed_block_number: Option<u64> = None;
+
+    // Wrap the main processing logic to catch errors and print block number
+    let result = {
         let mut reader = node::NodeReader::new(reader)?;
         let header = reader.read_raw_header()?;
         println!("Header bytes: {:?}", header);
@@ -72,6 +77,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             })?;
 
             println!("Slot: {:?}", block.slot);
+
+            // Update the latest processed block number
+            latest_processed_block_number = Some(block.slot);
+
+            // println!("Slot: {:?}", block.slot);
             // println!("Raw node: {:?}", raw_node);
             let mut entry_index: usize = 0;
             let mut this_block_executed_transaction_count: u64 = 0;
@@ -293,7 +303,26 @@ fn main() -> Result<(), Box<dyn Error>> {
                 ))
             })?;
         }
+    };
+
+    // If there was an error, print the latest processed block number before exiting
+    if let Err(ref error) = result {
+        match latest_processed_block_number {
+            Some(block_num) => {
+                eprintln!(
+                    "ERROR: Failed to process node from file. Latest processed block number: {}",
+                    block_num
+                );
+                eprintln!("Error details: {}", error);
+            }
+            None => {
+                eprintln!("ERROR: Failed to process node from file. No blocks were successfully processed yet.");
+                eprintln!("Error details: {}", error);
+            }
+        }
     }
+
+    result
 }
 
 pub struct MessageAddressLoaderFromTxMeta {
