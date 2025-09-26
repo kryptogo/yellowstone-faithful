@@ -41,6 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let service =
             solana_geyser_plugin_manager::geyser_plugin_service::GeyserPluginService::new(
                 confirmed_bank_receiver,
+                true,
                 geyser_config_files,
             )
             .unwrap_or_else(|err| panic!("Failed to create GeyserPluginService, error: {:?}", err));
