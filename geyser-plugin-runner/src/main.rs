@@ -29,7 +29,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut latest_processed_block_number: Option<u64> = None;
 
     // Wrap the main processing logic to catch errors and print block number
-    let result = {
+    let result: Result<(), Box<dyn Error>> = (|| {
         let mut reader = node::NodeReader::new(reader)?;
         let header = reader.read_raw_header()?;
         println!("Header bytes: {:?}", header);
@@ -303,7 +303,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 ))
             })?;
         }
-    };
+    })();
 
     // If there was an error, print the latest processed block number before exiting
     if let Err(ref error) = result {
@@ -320,6 +320,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                 eprintln!("Error details: {}", error);
             }
         }
+        eprintln!("Sleeping for 30 seconds before exit...");
+        std::thread::sleep(std::time::Duration::from_secs(30));
     }
 
     result
