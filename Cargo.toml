@@ -3,7 +3,6 @@ members = [
     "geyser-plugin-runner",
     "geyser-plugin-runner/demo-plugin",
     "jsonparsed",
-    "yellowstone-faithful-client"
 ]
 exclude = ["rust-compactindex"]
 resolver = "2"
@@ -34,22 +33,28 @@ tracing-subscriber = { version ="0.3.19", features = ["fmt", "env-filter"] }
 zstd = "0.13.0"
 reqwest = { version = "0.12.15", default-features = false, features = ["blocking", "gzip", "native-tls", "json"] }
 # solana/agave dependencies:
-agave-geyser-plugin-interface ="~2.0.13"
-solana-accounts-db ="~2.0.13"
-solana-entry ="~2.0.13"
-solana-geyser-plugin-manager ="~2.0.13"
-solana-rpc ="~2.0.13"
-solana-runtime ="~2.0.13"
-solana-sdk ="~2.0.13"
-solana-storage-proto ="~2.0.13"
-solana-transaction-status ="~2.0.13"
-solana-transaction = "2.2.2"
+agave-geyser-plugin-interface = "=2.3.12"
+solana-accounts-db = "~2.3"
+solana-entry = "~2.3"
+solana-geyser-plugin-manager = "~2.3"
+solana-rpc = "~2.3"
+solana-runtime = "~2.3"
+solana-storage-proto = "~2.3"
+solana-transaction-status = "~2.3"
+# Solana SDK is separated now, see: https://github.com/anza-xyz/solana-sdk
+solana-reward-info = "2.2.1"
+solana-hash = "2.2.1"
+solana-transaction = "2.2.1"
+solana-pubkey = "2.2.1"
+solana-message = "2.2.1"
+solana-clock = "2.2.1"
+solana-signature = "2.2.1"
+solana-commitment-config = "2.2.1"
+solana-transaction-error = "2.2.1"
 agave-transaction-view = "2.2.13"
 solana-sdk-ids = "2.2"
-solana-message = "2.2.1"
-solana-pubkey = "2.2.1"
-solana-program = "2.0.13"
-solana-hash = "2.0.13"
+solana-sdk = "~2.3"
+solana-program = "~2.3"
 
 [workspace.lints.clippy]
 clone_on_ref_ptr = "deny"
