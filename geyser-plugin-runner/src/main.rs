@@ -61,10 +61,26 @@ fn main() -> Result<(), Box<dyn Error>> {
         let mut todo_previous_blockhash = solana_hash::Hash::default();
         let mut todo_latest_entry_blockhash = solana_hash::Hash::default();
         loop {
-            let nodes = reader.read_until_block()?;
+            let nodes = match reader.read_until_block() {
+                Ok(nodes) => nodes,
+                Err(e) => {
+                    // Check if this is an EOF error at the end of the file
+                    if e.to_string().contains("UnexpectedEof")
+                        || e.to_string().contains("failed to fill whole buffer")
+                    {
+                        println!(
+                            "Reached end of CAR file. Latest processed block: {:?}",
+                            latest_processed_block_number
+                        );
+                        break; // Exit loop gracefully
+                    }
+                    // For other errors, propagate them
+                    return Err(e);
+                }
+            };
             // println!("Nodes: {:?}", nodes.get_cids());
             let block = nodes.get_block()?;
-            
+
             // Update the latest processed block number
             latest_processed_block_number = Some(block.slot);
 
