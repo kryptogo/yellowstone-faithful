@@ -41,6 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let service =
             solana_geyser_plugin_manager::geyser_plugin_service::GeyserPluginService::new(
                 confirmed_bank_receiver,
+                true, // geyser_plugin_always_enabled
                 geyser_config_files,
             )
             .unwrap_or_else(|err| panic!("Failed to create GeyserPluginService, error: {:?}", err));
@@ -62,12 +63,26 @@ fn main() -> Result<(), Box<dyn Error>> {
         let mut todo_previous_blockhash = solana_sdk::hash::Hash::default();
         let mut todo_latest_entry_blockhash = solana_sdk::hash::Hash::default();
         loop {
-            let nodes = reader.read_until_block().map_err(|err| {
-                Box::new(std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    std::format!("Error reading until block: {:?}", err),
-                ))
-            })?;
+            let nodes = match reader.read_until_block() {
+                Ok(nodes) => nodes,
+                Err(e) => {
+                    // Check if this is an EOF error at the end of the file
+                    if e.to_string().contains("UnexpectedEof")
+                        || e.to_string().contains("failed to fill whole buffer")
+                    {
+                        println!(
+                            "Reached end of CAR file. Latest processed block: {:?}",
+                            latest_processed_block_number
+                        );
+                        break; // Exit loop gracefully
+                    }
+                    // For other errors, propagate with context
+                    return Err(Box::new(std::io::Error::new(
+                        std::io::ErrorKind::Other,
+                        std::format!("Error reading until block: {:?}", e),
+                    )) as Box<dyn Error>);
+                }
+            };
             // println!("Nodes: {:?}", nodes.get_cids());
             let block = nodes.get_block().map_err(|err| {
                 Box::new(std::io::Error::new(
@@ -75,8 +90,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                     std::format!("Error reading block: {:?}", err),
                 ))
             })?;
-
-            println!("Slot: {:?}", block.slot);
 
             // Update the latest processed block number
             latest_processed_block_number = Some(block.slot);
@@ -303,6 +316,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 ))
             })?;
         }
+        Ok(())
     })();
 
     // If there was an error, print the latest processed block number before exiting
