@@ -29,7 +29,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut latest_processed_block_number: Option<u64> = None;
 
     // Wrap the main processing logic to catch errors and print block number
-    let result: Result<(), Box<dyn Error>> = (|| {
+    let result: Result<(), Box<dyn Error>> = (|| -> Result<(), Box<dyn Error>> {
         let mut reader = node::NodeReader::new(reader)?;
         let header = reader.read_raw_header()?;
         println!("Header bytes: {:?}", header);
@@ -74,7 +74,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                             "Reached end of CAR file. Latest processed block: {:?}",
                             latest_processed_block_number
                         );
-                        break; // Exit loop gracefully
+                        break Ok(()); // Exit loop gracefully
                     }
                     // For other errors, propagate with context
                     return Err(Box::new(std::io::Error::new(
