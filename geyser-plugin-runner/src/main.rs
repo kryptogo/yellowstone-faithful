@@ -74,7 +74,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                             "Reached end of CAR file. Latest processed block: {:?}",
                             latest_processed_block_number
                         );
-                        break Ok(()); // Exit loop gracefully
+                        break; // Exit loop gracefully
                     }
                     // For other errors, propagate with context
                     return Err(Box::new(std::io::Error::new(
